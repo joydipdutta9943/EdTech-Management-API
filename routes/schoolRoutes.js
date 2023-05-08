@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 
 const { createSchool, getAllSchool, getAllStudents } = require('../controllers/schoolController');
-const { authenticateUser, authorizePermissions } = require('../middleware/authentication');
+const { authenticateUser, authorizePermissions, checkPermissions } = require('../middleware/authentication');
 
 router.route('/school')
-    .post(authenticateUser, authorizePermissions('school-create'), createSchool)
-    .get(authenticateUser, authorizePermissions('school-get'), getAllSchool);
+    .post(authenticateUser, checkPermissions('createAny', 'schools'), createSchool)
+    .get(authenticateUser, checkPermissions('readAny', 'schools'), getAllSchool);
     
 router.route('/school/students')
-    .get(authenticateUser, authorizePermissions('school-students'), getAllStudents);
+    .get(authenticateUser, checkPermissions('readAny', 'schools'), getAllStudents);
 
 module.exports = router;
