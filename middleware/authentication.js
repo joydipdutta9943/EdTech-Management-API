@@ -6,7 +6,7 @@ const AccessControl = require("accesscontrol");
 // Authenticating the user and checking whether he has permission to access or not.
 
 const ac = new AccessControl();
-ac.grant("Manager").readAny("schools");
+ac.grant("Manager").readAny("schools").update("schools", ['name']);
 
 ac.grant("Administrator")
   .extend("Manager")
@@ -46,6 +46,7 @@ function checkPermissions(action, resource) {
   return (req, res, next) => {
     const permission = ac.can(req.user.role.name)[action](resource);
     if (permission.granted) {
+      req.body = {...req.body, attributes: permission.attributes}
       next();
     } else {
       throw new CustomError.UnauthorizedError(
